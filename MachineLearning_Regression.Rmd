@@ -65,10 +65,33 @@ Alright, Machine Learning, here we come!
 ```{r}
 # This dataset is available in the keras/tfdatasets packages:
 boston_housing <- dataset_boston_housing()
-boston_housing
+#boston_housing
+# Wanted to show the data, but it is too big and takes up too much space in the
+# pdf file
+# Adjusting to show what's in this dataframe
+dimnames.data.frame(boston_housing)
+names(boston_housing$train)
+names(boston_housing$test)
 ```
 
-Looking at the dataset, we see it is already broked in to *train* and *test*, each with an x and y and both the x dataframes have 13 columns. If you remember from the description of Supervised learning above, we train the algorithm on input data and the desired output. The *test* data is the desired output we will be running the regression on. So let's move on and assign their variables:
+```{r}
+head(boston_housing$train$x)
+```
+
+```{r}
+head(boston_housing$train$y)
+```
+
+```{r}
+head(boston_housing$test$x)
+```
+
+```{r}
+head(boston_housing$test$y)
+```
+
+
+Looking at the dataset, we see it is already broken in to *train* and *test*, each with an x and y and the x dataframes have 13 columns. If you remember from the description of Supervised learning above, we train the algorithm on input data and the desired output, the *train* set will has both the input and the desired output. Then *test* data will be what we run the model on to see how it performs. So let's move on and assign their variables:
 
 ```{r}
 c(train_data, train_labels) %<-% boston_housing$train

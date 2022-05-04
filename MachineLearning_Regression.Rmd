@@ -1,0 +1,34 @@
+---
+title: "MachineLearning_Regression"
+author: "Mamta"
+date: "5/3/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+## What
+
+## Why
+
+## How
+
+# Body
+
+# Topics from Class
+
+## R Markdown
+
+## Github
+
+## Regression
+
+## Machine Learning
+
+## R Libraries/Packages
+
+# Conclusion

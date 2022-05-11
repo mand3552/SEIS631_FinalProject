@@ -1,8 +1,3 @@
-Machine Learning with R
-================
-Mamta Mandan
-5/3/2022
-
 # Introduction
 
 ## What
@@ -95,43 +90,35 @@ with some additions of my own or slight changes.
 For those who may want to follow along, I’ll begin by showing the
 libraries needed to be installed:
 
-``` r
-install.packages("tensorflow")
-install_tensorflow()
-install.packages("tfdatasets")
-install.packages("keras")
-install_keras()
-```
+    install.packages("tensorflow")
+    install_tensorflow()
+    install.packages("tfdatasets")
+    install.packages("keras")
+    install_keras()
 
 Now that we have the libraries installed, let’s do a quick check to make
 sure:
 
-``` r
-library(tensorflow)
-library(tfdatasets)
-library(keras)
-# The following libraries were not explicitly installed above as most likely you
-#already have it from when we installed tidyverse in class
-library(dplyr)
-library(ggplot2)
-```
+    library(tensorflow)
+    library(tfdatasets)
+    library(keras)
+    # The following libraries were not explicitly installed above as most likely you
+    #already have it from when we installed tidyverse in class
+    library(dplyr)
+    library(ggplot2)
 
 Alright, Machine Learning, here we come!
 
-``` r
-# This dataset is available in the keras/tfdatasets packages:
-boston_housing <- dataset_boston_housing()
-```
+    # This dataset is available in the keras/tfdatasets packages:
+    boston_housing <- dataset_boston_housing()
 
     ## Loaded Tensorflow version 2.8.0
 
-``` r
-#boston_housing
-# Wanted to show the data, but it is too big and takes up too much space in the
-# pdf file
-# Adjusting to show what's in this dataframe
-dimnames.data.frame(boston_housing)
-```
+    #boston_housing
+    # Wanted to show the data, but it is too big and takes up too much space in the
+    # pdf file
+    # Adjusting to show what's in this dataframe
+    dimnames.data.frame(boston_housing)
 
     ## [[1]]
     ## NULL
@@ -139,65 +126,39 @@ dimnames.data.frame(boston_housing)
     ## [[2]]
     ## [1] "train" "test"
 
-``` r
-names(boston_housing$train)
-```
+    names(boston_housing$train)
 
     ## [1] "x" "y"
 
-``` r
-names(boston_housing$test)
-```
+    names(boston_housing$test)
 
     ## [1] "x" "y"
 
-``` r
-head(boston_housing$train$x)
-```
+    head(boston_housing$train$x)
 
-    ##         [,1] [,2]  [,3] [,4]  [,5]  [,6]  [,7]   [,8] [,9] [,10] [,11]  [,12]
-    ## [1,] 1.23247  0.0  8.14    0 0.538 6.142  91.7 3.9769    4   307  21.0 396.90
-    ## [2,] 0.02177 82.5  2.03    0 0.415 7.610  15.7 6.2700    2   348  14.7 395.38
-    ## [3,] 4.89822  0.0 18.10    0 0.631 4.970 100.0 1.3325   24   666  20.2 375.52
-    ## [4,] 0.03961  0.0  5.19    0 0.515 6.037  34.5 5.9853    5   224  20.2 396.90
-    ## [5,] 3.69311  0.0 18.10    0 0.713 6.376  88.4 2.5671   24   666  20.2 391.43
-    ## [6,] 0.28392  0.0  7.38    0 0.493 5.708  74.3 4.7211    5   287  19.6 391.13
-    ##      [,13]
-    ## [1,] 18.72
-    ## [2,]  3.11
-    ## [3,]  3.26
-    ## [4,]  8.01
-    ## [5,] 14.65
-    ## [6,] 11.74
+    ##         [,1] [,2]  [,3] [,4]  [,5]  [,6]  [,7]   [,8] [,9] [,10] [,11]  [,12] [,13]
+    ## [1,] 1.23247  0.0  8.14    0 0.538 6.142  91.7 3.9769    4   307  21.0 396.90 18.72
+    ## [2,] 0.02177 82.5  2.03    0 0.415 7.610  15.7 6.2700    2   348  14.7 395.38  3.11
+    ## [3,] 4.89822  0.0 18.10    0 0.631 4.970 100.0 1.3325   24   666  20.2 375.52  3.26
+    ## [4,] 0.03961  0.0  5.19    0 0.515 6.037  34.5 5.9853    5   224  20.2 396.90  8.01
+    ## [5,] 3.69311  0.0 18.10    0 0.713 6.376  88.4 2.5671   24   666  20.2 391.43 14.65
+    ## [6,] 0.28392  0.0  7.38    0 0.493 5.708  74.3 4.7211    5   287  19.6 391.13 11.74
 
-``` r
-head(boston_housing$train$y)
-```
+    head(boston_housing$train$y)
 
     ## [1] 15.2 42.3 50.0 21.1 17.7 18.5
 
-``` r
-head(boston_housing$test$x)
-```
+    head(boston_housing$test$x)
 
-    ##          [,1] [,2]  [,3] [,4]  [,5]  [,6]  [,7]   [,8] [,9] [,10] [,11]  [,12]
-    ## [1,] 18.08460    0 18.10    0 0.679 6.434 100.0 1.8347   24   666  20.2  27.25
-    ## [2,]  0.12329    0 10.01    0 0.547 5.913  92.9 2.3534    6   432  17.8 394.95
-    ## [3,]  0.05497    0  5.19    0 0.515 5.985  45.4 4.8122    5   224  20.2 396.90
-    ## [4,]  1.27346    0 19.58    1 0.605 6.250  92.6 1.7984    5   403  14.7 338.92
-    ## [5,]  0.07151    0  4.49    0 0.449 6.121  56.8 3.7476    3   247  18.5 395.15
-    ## [6,]  0.27957    0  9.69    0 0.585 5.926  42.6 2.3817    6   391  19.2 396.90
-    ##      [,13]
-    ## [1,] 29.05
-    ## [2,] 16.21
-    ## [3,]  9.74
-    ## [4,]  5.50
-    ## [5,]  8.44
-    ## [6,] 13.59
+    ##          [,1] [,2]  [,3] [,4]  [,5]  [,6]  [,7]   [,8] [,9] [,10] [,11]  [,12] [,13]
+    ## [1,] 18.08460    0 18.10    0 0.679 6.434 100.0 1.8347   24   666  20.2  27.25 29.05
+    ## [2,]  0.12329    0 10.01    0 0.547 5.913  92.9 2.3534    6   432  17.8 394.95 16.21
+    ## [3,]  0.05497    0  5.19    0 0.515 5.985  45.4 4.8122    5   224  20.2 396.90  9.74
+    ## [4,]  1.27346    0 19.58    1 0.605 6.250  92.6 1.7984    5   403  14.7 338.92  5.50
+    ## [5,]  0.07151    0  4.49    0 0.449 6.121  56.8 3.7476    3   247  18.5 395.15  8.44
+    ## [6,]  0.27957    0  9.69    0 0.585 5.926  42.6 2.3817    6   391  19.2 396.90 13.59
 
-``` r
-head(boston_housing$test$y)
-```
+    head(boston_housing$test$y)
 
     ## [1]  7.2 18.8 19.0 27.0 22.2 24.5
 
@@ -209,17 +170,13 @@ has both the input and the desired output. Then *test* data will be what
 we run the model on to see how it performs. So let’s move on and assign
 their variables:
 
-``` r
-c(train_data, train_labels) %<-% boston_housing$train
-c(test_data, test_labels) %<-% boston_housing$test
-paste0("Training entries: ", length(train_data), ", labels: ", length(train_labels))
-```
+    c(train_data, train_labels) %<-% boston_housing$train
+    c(test_data, test_labels) %<-% boston_housing$test
+    paste0("Training entries: ", length(train_data), ", labels: ", length(train_labels))
 
     ## [1] "Training entries: 5252, labels: 404"
 
-``` r
-paste0("Testing entries: ", length(test_data), ", labels: ", length(test_labels))
-```
+    paste0("Testing entries: ", length(test_data), ", labels: ", length(test_labels))
 
     ## [1] "Testing entries: 1326, labels: 102"
 
@@ -252,27 +209,25 @@ town. \* Percentage lower status of the population.”
 Now that we know what the columns are, let’s add their names so
 examining the data makes a little more sense:
 
-``` r
-column_names <- c('CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 
-                  'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT')
+    column_names <- c('CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 
+                      'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT')
 
-train_df <- train_data %>% 
-  as_tibble(.name_repair = "minimal") %>% 
-  setNames(column_names) %>% 
-  mutate(label = train_labels)
+    train_df <- train_data %>% 
+      as_tibble(.name_repair = "minimal") %>% 
+      setNames(column_names) %>% 
+      mutate(label = train_labels)
 
-test_df <- test_data %>% 
-  as_tibble(.name_repair = "minimal") %>% 
-  setNames(column_names) %>% 
-  mutate(label = test_labels)
-```
+    test_df <- test_data %>% 
+      as_tibble(.name_repair = "minimal") %>% 
+      setNames(column_names) %>% 
+      mutate(label = test_labels)
 
 Before we take a look at the top few rows of the dataframe, let’s go
 over what we did in the above code chunk. First, we created a new
 variable and name it %\_df, this variable is taking the %\_data part of
 the combined vector we constructed earlier and converting it to a
-dataframe using the as_tibble() function. Within this function, we
-clarify to not check the names of the columns using .name_repair =
+dataframe using the as\_tibble() function. Within this function, we
+clarify to not check the names of the columns using .name\_repair =
 “minimal”. This is being done since the original data doesn’t have
 column names and we are assigning them now using the setNames()
 function, here we are pulling the array for the column names built in
@@ -281,35 +236,29 @@ to this dataframe with the column name ‘label’ which is populated with y
 of the train/test data or what we called %\_labels. So now we have two
 new dataframes, let’s peek at them:
 
-``` r
-head(train_df)
-```
+    head(train_df)
 
     ## # A tibble: 6 × 14
-    ##     CRIM    ZN INDUS  CHAS   NOX    RM   AGE   DIS   RAD   TAX PTRATIO     B
-    ##    <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>   <dbl> <dbl>
-    ## 1 1.23     0    8.14     0 0.538  6.14  91.7  3.98     4   307    21    397.
-    ## 2 0.0218  82.5  2.03     0 0.415  7.61  15.7  6.27     2   348    14.7  395.
-    ## 3 4.90     0   18.1      0 0.631  4.97 100    1.33    24   666    20.2  376.
-    ## 4 0.0396   0    5.19     0 0.515  6.04  34.5  5.99     5   224    20.2  397.
-    ## 5 3.69     0   18.1      0 0.713  6.38  88.4  2.57    24   666    20.2  391.
-    ## 6 0.284    0    7.38     0 0.493  5.71  74.3  4.72     5   287    19.6  391.
-    ## # … with 2 more variables: LSTAT <dbl>, label <dbl>
+    ##     CRIM    ZN INDUS  CHAS   NOX    RM   AGE   DIS   RAD   TAX PTRATIO     B LSTAT label
+    ##    <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>   <dbl> <dbl> <dbl> <dbl>
+    ## 1 1.23     0    8.14     0 0.538  6.14  91.7  3.98     4   307    21    397. 18.7   15.2
+    ## 2 0.0218  82.5  2.03     0 0.415  7.61  15.7  6.27     2   348    14.7  395.  3.11  42.3
+    ## 3 4.90     0   18.1      0 0.631  4.97 100    1.33    24   666    20.2  376.  3.26  50  
+    ## 4 0.0396   0    5.19     0 0.515  6.04  34.5  5.99     5   224    20.2  397.  8.01  21.1
+    ## 5 3.69     0   18.1      0 0.713  6.38  88.4  2.57    24   666    20.2  391. 14.6   17.7
+    ## 6 0.284    0    7.38     0 0.493  5.71  74.3  4.72     5   287    19.6  391. 11.7   18.5
 
-``` r
-head(test_df)
-```
+    head(test_df)
 
     ## # A tibble: 6 × 14
-    ##      CRIM    ZN INDUS  CHAS   NOX    RM   AGE   DIS   RAD   TAX PTRATIO     B
-    ##     <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>   <dbl> <dbl>
-    ## 1 18.1        0 18.1      0 0.679  6.43 100    1.83    24   666    20.2  27.2
-    ## 2  0.123      0 10.0      0 0.547  5.91  92.9  2.35     6   432    17.8 395. 
-    ## 3  0.0550     0  5.19     0 0.515  5.98  45.4  4.81     5   224    20.2 397. 
-    ## 4  1.27       0 19.6      1 0.605  6.25  92.6  1.80     5   403    14.7 339. 
-    ## 5  0.0715     0  4.49     0 0.449  6.12  56.8  3.75     3   247    18.5 395. 
-    ## 6  0.280      0  9.69     0 0.585  5.93  42.6  2.38     6   391    19.2 397. 
-    ## # … with 2 more variables: LSTAT <dbl>, label <dbl>
+    ##      CRIM    ZN INDUS  CHAS   NOX    RM   AGE   DIS   RAD   TAX PTRATIO     B LSTAT label
+    ##     <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>   <dbl> <dbl> <dbl> <dbl>
+    ## 1 18.1        0 18.1      0 0.679  6.43 100    1.83    24   666    20.2  27.2 29.0    7.2
+    ## 2  0.123      0 10.0      0 0.547  5.91  92.9  2.35     6   432    17.8 395.  16.2   18.8
+    ## 3  0.0550     0  5.19     0 0.515  5.98  45.4  4.81     5   224    20.2 397.   9.74  19  
+    ## 4  1.27       0 19.6      1 0.605  6.25  92.6  1.80     5   403    14.7 339.   5.5   27  
+    ## 5  0.0715     0  4.49     0 0.449  6.12  56.8  3.75     3   247    18.5 395.   8.44  22.2
+    ## 6  0.280      0  9.69     0 0.585  5.93  42.6  2.38     6   391    19.2 397.  13.6   24.5
 
 Alright, looking the data now is much easier on the eyes, plus since we
 are doing a regression model machine learning algorithm, we know it is
@@ -321,94 +270,90 @@ integers, and most other columns are doubles or floats. You can run the
 model with the data as is, but it is best practice to normalize the
 values so they are all on the same scale range.
 
-``` r
-spec <- feature_spec(train_df, label ~ . ) %>% 
-  step_numeric_column(all_numeric(), normalizer_fn = scaler_standard()) %>% 
-  fit()
+    spec <- feature_spec(train_df, label ~ . ) %>% 
+      step_numeric_column(all_numeric(), normalizer_fn = scaler_standard()) %>% 
+      fit()
 
-spec
-```
+    spec
 
-    ## ── Feature Spec ──────────────────────────────────────────────────────────────── 
+    ## ── Feature Spec ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
     ## A feature_spec with 13 steps.
     ## Fitted: TRUE 
-    ## ── Steps ─────────────────────────────────────────────────────────────────────── 
+    ## ── Steps ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
     ## The feature_spec has 1 dense features.
     ## StepNumericColumn: CRIM, ZN, INDUS, CHAS, NOX, RM, AGE, DIS, RAD, TAX, PTRATIO, B, LSTAT 
-    ## ── Dense features ──────────────────────────────────────────────────────────────
+    ## ── Dense features ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 Amazing how far we’ve made it. It’s finally time to build the model now
 that we have normalized the data.
 
-``` r
-input <- layer_input_from_dataset(train_df %>% select(-label))
+    input <- layer_input_from_dataset(train_df %>% select(-label))
 
-output <- input %>% 
-  layer_dense_features(dense_features(spec)) %>% 
-  layer_dense(units = 64, activation = "relu") %>%
-  layer_dense(units = 64, activation = "relu") %>%
-  layer_dense(units = 1) 
+    output <- input %>% 
+      layer_dense_features(dense_features(spec)) %>% 
+      layer_dense(units = 64, activation = "relu") %>%
+      layer_dense(units = 64, activation = "relu") %>%
+      layer_dense(units = 1) 
 
-model <- keras_model(input, output)
+    model <- keras_model(input, output)
 
-summary(model)
-```
+    summary(model)
 
     ## Model: "model"
-    ## ________________________________________________________________________________
-    ##  Layer (type)             Output Shape      Param #  Connected to               
-    ## ================================================================================
-    ##  AGE (InputLayer)         [(None,)]         0        []                         
-    ##                                                                                 
-    ##  B (InputLayer)           [(None,)]         0        []                         
-    ##                                                                                 
-    ##  CHAS (InputLayer)        [(None,)]         0        []                         
-    ##                                                                                 
-    ##  CRIM (InputLayer)        [(None,)]         0        []                         
-    ##                                                                                 
-    ##  DIS (InputLayer)         [(None,)]         0        []                         
-    ##                                                                                 
-    ##  INDUS (InputLayer)       [(None,)]         0        []                         
-    ##                                                                                 
-    ##  LSTAT (InputLayer)       [(None,)]         0        []                         
-    ##                                                                                 
-    ##  NOX (InputLayer)         [(None,)]         0        []                         
-    ##                                                                                 
-    ##  PTRATIO (InputLayer)     [(None,)]         0        []                         
-    ##                                                                                 
-    ##  RAD (InputLayer)         [(None,)]         0        []                         
-    ##                                                                                 
-    ##  RM (InputLayer)          [(None,)]         0        []                         
-    ##                                                                                 
-    ##  TAX (InputLayer)         [(None,)]         0        []                         
-    ##                                                                                 
-    ##  ZN (InputLayer)          [(None,)]         0        []                         
-    ##                                                                                 
-    ##  dense_features (DenseFea  (None, 13)       0        ['AGE[0][0]',              
-    ##  tures)                                               'B[0][0]',                
-    ##                                                       'CHAS[0][0]',             
-    ##                                                       'CRIM[0][0]',             
-    ##                                                       'DIS[0][0]',              
-    ##                                                       'INDUS[0][0]',            
-    ##                                                       'LSTAT[0][0]',            
-    ##                                                       'NOX[0][0]',              
-    ##                                                       'PTRATIO[0][0]',          
-    ##                                                       'RAD[0][0]',              
-    ##                                                       'RM[0][0]',               
-    ##                                                       'TAX[0][0]',              
-    ##                                                       'ZN[0][0]']               
-    ##                                                                                 
-    ##  dense_2 (Dense)          (None, 64)        896      ['dense_features[0][0]']   
-    ##                                                                                 
-    ##  dense_1 (Dense)          (None, 64)        4160     ['dense_2[0][0]']          
-    ##                                                                                 
-    ##  dense (Dense)            (None, 1)         65       ['dense_1[0][0]']          
-    ##                                                                                 
-    ## ================================================================================
+    ## ___________________________________________________________________________________________________________________________________________
+    ##  Layer (type)                                Output Shape                   Param #          Connected to                                  
+    ## ===========================================================================================================================================
+    ##  AGE (InputLayer)                            [(None,)]                      0                []                                            
+    ##                                                                                                                                            
+    ##  B (InputLayer)                              [(None,)]                      0                []                                            
+    ##                                                                                                                                            
+    ##  CHAS (InputLayer)                           [(None,)]                      0                []                                            
+    ##                                                                                                                                            
+    ##  CRIM (InputLayer)                           [(None,)]                      0                []                                            
+    ##                                                                                                                                            
+    ##  DIS (InputLayer)                            [(None,)]                      0                []                                            
+    ##                                                                                                                                            
+    ##  INDUS (InputLayer)                          [(None,)]                      0                []                                            
+    ##                                                                                                                                            
+    ##  LSTAT (InputLayer)                          [(None,)]                      0                []                                            
+    ##                                                                                                                                            
+    ##  NOX (InputLayer)                            [(None,)]                      0                []                                            
+    ##                                                                                                                                            
+    ##  PTRATIO (InputLayer)                        [(None,)]                      0                []                                            
+    ##                                                                                                                                            
+    ##  RAD (InputLayer)                            [(None,)]                      0                []                                            
+    ##                                                                                                                                            
+    ##  RM (InputLayer)                             [(None,)]                      0                []                                            
+    ##                                                                                                                                            
+    ##  TAX (InputLayer)                            [(None,)]                      0                []                                            
+    ##                                                                                                                                            
+    ##  ZN (InputLayer)                             [(None,)]                      0                []                                            
+    ##                                                                                                                                            
+    ##  dense_features (DenseFeatures)              (None, 13)                     0                ['AGE[0][0]',                                 
+    ##                                                                                               'B[0][0]',                                   
+    ##                                                                                               'CHAS[0][0]',                                
+    ##                                                                                               'CRIM[0][0]',                                
+    ##                                                                                               'DIS[0][0]',                                 
+    ##                                                                                               'INDUS[0][0]',                               
+    ##                                                                                               'LSTAT[0][0]',                               
+    ##                                                                                               'NOX[0][0]',                                 
+    ##                                                                                               'PTRATIO[0][0]',                             
+    ##                                                                                               'RAD[0][0]',                                 
+    ##                                                                                               'RM[0][0]',                                  
+    ##                                                                                               'TAX[0][0]',                                 
+    ##                                                                                               'ZN[0][0]']                                  
+    ##                                                                                                                                            
+    ##  dense_2 (Dense)                             (None, 64)                     896              ['dense_features[0][0]']                      
+    ##                                                                                                                                            
+    ##  dense_1 (Dense)                             (None, 64)                     4160             ['dense_2[0][0]']                             
+    ##                                                                                                                                            
+    ##  dense (Dense)                               (None, 1)                      65               ['dense_1[0][0]']                             
+    ##                                                                                                                                            
+    ## ===========================================================================================================================================
     ## Total params: 5,121
     ## Trainable params: 5,121
     ## Non-trainable params: 0
-    ## ________________________________________________________________________________
+    ## ___________________________________________________________________________________________________________________________________________
 
 Now that we have the model, let’s use the compile() function so it is
 configured for training. We are using the loss = “mse” which stands for
@@ -420,41 +365,37 @@ absolute error (mae). The optimizer chosen is the one recommended for
 recurrent neural networks and we have left the learning rate as default
 (<https://tensorflow.rstudio.com/reference/keras/optimizer_rmsprop/>).
 
-``` r
-model %>% 
-  compile(
-    loss = "mse",
-    optimizer = optimizer_rmsprop(),
-    metrics = list("mean_absolute_error")
-  )
-```
+    model %>% 
+      compile(
+        loss = "mse",
+        optimizer = optimizer_rmsprop(),
+        metrics = list("mean_absolute_error")
+      )
 
 From here, let’s combine the above two steps into a single function as
 we will need to use as we train the algorithm and play around with the
 iterations to ensure it’s as accurate as possible:
 
-``` r
-build_model <- function() {
-  input <- layer_input_from_dataset(train_df %>% select(-label))
-  
-  output <- input %>% 
-    layer_dense_features(dense_features(spec)) %>% 
-    layer_dense(units = 64, activation = "relu") %>%
-    layer_dense(units = 64, activation = "relu") %>%
-    layer_dense(units = 1) 
-  
-  model <- keras_model(input, output)
-  
-  model %>% 
-    compile(
-      loss = "mse",
-      optimizer = optimizer_rmsprop(),
-      metrics = list("mean_absolute_error")
-    )
-  
-  model
-}
-```
+    build_model <- function() {
+      input <- layer_input_from_dataset(train_df %>% select(-label))
+      
+      output <- input %>% 
+        layer_dense_features(dense_features(spec)) %>% 
+        layer_dense(units = 64, activation = "relu") %>%
+        layer_dense(units = 64, activation = "relu") %>%
+        layer_dense(units = 1) 
+      
+      model <- keras_model(input, output)
+      
+      model %>% 
+        compile(
+          loss = "mse",
+          optimizer = optimizer_rmsprop(),
+          metrics = list("mean_absolute_error")
+        )
+      
+      model
+    }
 
 It’s now time to train the model. Within Keras there is a Callbacks
 object the purose of which is to “perform actions at various stages of
@@ -463,26 +404,24 @@ train the model, we will create a custom callback setting a dot as the
 output for each iteration through the x and y data. Keras calls these
 iterations epochs and we will be running 500 of them for this training.
 
-``` r
-# Display training progress by printing a single dot for each completed epoch.
-print_dot_callback <- callback_lambda(
-  on_epoch_end = function(epoch, logs) {
-    if (epoch %% 80 == 0) cat("\n")
-    cat(".")
-  }
-)    
+    # Display training progress by printing a single dot for each completed epoch.
+    print_dot_callback <- callback_lambda(
+      on_epoch_end = function(epoch, logs) {
+        if (epoch %% 80 == 0) cat("\n")
+        cat(".")
+      }
+    )    
 
-model <- build_model()
+    model <- build_model()
 
-history <- model %>% fit(
-  x = train_df %>% select(-label),
-  y = train_df$label,
-  epochs = 500,
-  validation_split = 0.2,
-  verbose = 0,
-  callbacks = list(print_dot_callback)
-)
-```
+    history <- model %>% fit(
+      x = train_df %>% select(-label),
+      y = train_df$label,
+      epochs = 500,
+      validation_split = 0.2,
+      verbose = 0,
+      callbacks = list(print_dot_callback)
+    )
 
     ## 
     ## ................................................................................
@@ -497,61 +436,53 @@ Just running the model and seeing the output of .’s isn’t very
 informative. To understand what impact this training had, it would be
 best to see it plotted out.
 
-``` r
-plot(history)
-```
+    plot(history)
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](MachineLearning_Regression_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
-From these graphs we can see lines are flat after about 150/200 epochs,
-this indicates no improvement in the model training. This can be
-adjusted by using a different callback() function -
-callback_early_stopping(). In this we are setting it to monitor the loss
-and the patience = 20 tells the model to stop running after 20 epochs of
-no improvement. Let’s re-train the model and plot the results:
+![](README_files/figure-markdown_strict/unnamed-chunk-16-1.png) From
+these graphs we can see lines are flat after about 150/200 epochs, this
+indicates no improvement in the model training. This can be adjusted by
+using a different callback() function - callback\_early\_stopping(). In
+this we are setting it to monitor the loss and the patience = 20 tells
+the model to stop running after 20 epochs of no improvement. Let’s
+re-train the model and plot the results:
 
-``` r
-# The patience parameter is the amount of epochs to check for improvement.
-early_stop <- callback_early_stopping(monitor = "val_loss", patience = 20)
+    # The patience parameter is the amount of epochs to check for improvement.
+    early_stop <- callback_early_stopping(monitor = "val_loss", patience = 20)
 
-model <- build_model()
+    model <- build_model()
 
-history <- model %>% fit(
-  x = train_df %>% select(-label),
-  y = train_df$label,
-  epochs = 500,
-  validation_split = 0.2,
-  verbose = 0,
-  callbacks = list(early_stop)
-)
+    history <- model %>% fit(
+      x = train_df %>% select(-label),
+      y = train_df$label,
+      epochs = 500,
+      validation_split = 0.2,
+      verbose = 0,
+      callbacks = list(early_stop)
+    )
 
-plot(history)
-```
+    plot(history)
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](MachineLearning_Regression_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
-According to these graphs the average error is \~$2,500. Can we get a
+![](README_files/figure-markdown_strict/unnamed-chunk-17-1.png)
+According to these graphs the average error is ~$2,500. Can we get a
 number to confirm?
 
-``` r
-c(loss, mae) %<-% (model %>% evaluate(train_df %>% select(-label), train_df$label, verbose = 0))
+    c(loss, mae) %<-% (model %>% evaluate(train_df %>% select(-label), train_df$label, verbose = 0))
 
-paste0("Mean absolute error on train set: $", sprintf("%.2f", mae * 1000))
-```
+    paste0("Mean absolute error on train set: $", sprintf("%.2f", mae * 1000))
 
-    ## [1] "Mean absolute error on train set: $2180.55"
+    ## [1] "Mean absolute error on train set: $2113.73"
 
 Let’s compare this to what the model evaluates on the test dataset:
 
-``` r
-c(loss, mae) %<-% (model %>% evaluate(test_df %>% select(-label), test_df$label, verbose = 0))
+    c(loss, mae) %<-% (model %>% evaluate(test_df %>% select(-label), test_df$label, verbose = 0))
 
-paste0("Mean absolute error on test set: $", sprintf("%.2f", mae * 1000))
-```
+    paste0("Mean absolute error on test set: $", sprintf("%.2f", mae * 1000))
 
-    ## [1] "Mean absolute error on test set: $3167.19"
+    ## [1] "Mean absolute error on test set: $3175.81"
 
 Looking at the number I got for MAE is 3551.23, however on the
 TensorFlow tutorial page they show 3002.32:
@@ -562,29 +493,25 @@ set](TensorFlow_Tutorial_MAE_testset.png)
 I wonder if this is because I did not normalize the test data. Let’s try
 doing that and then re-running the above code block to see what happens:
 
-``` r
-spec2 <- feature_spec(test_df, label ~ . ) %>% 
-  step_numeric_column(all_numeric(), normalizer_fn = scaler_standard()) %>% 
-  fit()
+    spec2 <- feature_spec(test_df, label ~ . ) %>% 
+      step_numeric_column(all_numeric(), normalizer_fn = scaler_standard()) %>% 
+      fit()
 
-spec2
-```
+    spec2
 
-    ## ── Feature Spec ──────────────────────────────────────────────────────────────── 
+    ## ── Feature Spec ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
     ## A feature_spec with 13 steps.
     ## Fitted: TRUE 
-    ## ── Steps ─────────────────────────────────────────────────────────────────────── 
+    ## ── Steps ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
     ## The feature_spec has 1 dense features.
     ## StepNumericColumn: CRIM, ZN, INDUS, CHAS, NOX, RM, AGE, DIS, RAD, TAX, PTRATIO, B, LSTAT 
-    ## ── Dense features ──────────────────────────────────────────────────────────────
+    ## ── Dense features ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-``` r
-c(loss, mae) %<-% (model %>% evaluate(test_df %>% select(-label), test_df$label, verbose = 0))
+    c(loss, mae) %<-% (model %>% evaluate(test_df %>% select(-label), test_df$label, verbose = 0))
 
-paste0("Mean absolute error on test set: $", sprintf("%.2f", mae * 1000))
-```
+    paste0("Mean absolute error on test set: $", sprintf("%.2f", mae * 1000))
 
-    ## [1] "Mean absolute error on test set: $3167.19"
+    ## [1] "Mean absolute error on test set: $3175.81"
 
 I am still getting the same result. This could be that data in the
 dataset has changed since they posted their tutorial. Or maybe I missed
@@ -596,26 +523,17 @@ not as significant.
 Since the purpose of most machine learning is predictive modeling, let’s
 generate some predictions based on the model we have now trained:
 
-``` r
-test_predictions <- model %>% predict(test_df %>% select(-label))
-test_predictions[ , 1]
-```
+    test_predictions <- model %>% predict(test_df %>% select(-label))
+    test_predictions[ , 1]
 
-    ##   [1]  7.824508 18.438173 22.606895 32.489014 26.139313 19.164799 27.943424
-    ##   [8] 22.492310 19.502682 22.781286 17.746288 17.508234 16.348640 42.907059
-    ##  [15] 20.222286 20.749861 28.148834 21.342222 19.762730 39.023758 11.396518
-    ##  [22] 14.911475 21.272713 16.252840 22.868515 25.752922 31.793354 31.337475
-    ##  [29] 10.624821 22.037342 19.796774 14.663150 34.827858 26.448841 19.371168
-    ##  [36]  8.678853 14.561042 17.337826 21.368004 26.740234 30.051210 28.531113
-    ##  [43] 15.019819 41.916954 31.402281 24.767376 25.932234 16.867083 23.869610
-    ##  [50] 22.795464 35.509277 21.061010 12.621741 15.732689 36.381279 28.544197
-    ##  [57] 13.163313 47.714943 35.673088 24.199558 25.648373 17.996668 15.126249
-    ##  [64] 18.401497 24.110394 23.654793 13.325644 23.251358 14.250115  7.073471
-    ##  [71] 38.614464 30.573025 26.304831 14.682804 26.065830 19.497417 21.038332
-    ##  [78] 24.112095 35.427956 11.087705 20.354578 38.214531 17.194674 14.312494
-    ##  [85] 18.509018 19.385057 22.156239 20.780462 22.555878 31.687645 20.565479
-    ##  [92] 22.991116 24.883678 42.215939 36.188534 19.305977 36.099514 55.884552
-    ##  [99] 28.866949 46.151768 33.255753 20.027645
+    ##   [1]  8.291296 18.580660 21.940470 32.446110 25.609238 19.524576 28.019157 22.242640 18.947983 22.041273 17.722483 17.134146 16.077282
+    ##  [14] 42.489101 18.699308 19.563688 27.899134 21.152613 19.214466 38.456463 11.360524 15.391788 20.914240 15.456657 20.773479 24.676567
+    ##  [27] 32.060402 28.071505 10.636412 22.488497 19.275652 14.715639 34.514153 26.490610 18.526983  9.222099 15.332552 17.821321 22.271517
+    ##  [40] 26.471128 28.572823 28.385550 14.935079 40.689476 30.714273 25.149134 26.510857 17.006639 24.817846 22.738436 34.070557 20.166559
+    ##  [53] 12.456122 16.388071 35.891769 28.206112 12.725334 47.827763 35.261124 23.449163 25.546373 17.705328 13.907625 18.004059 23.785948
+    ##  [66] 21.881830 13.924601 22.913406 13.432224  7.286370 38.300983 29.442411 24.118299 13.935566 25.508701 17.803782 21.168638 24.104616
+    ##  [79] 35.385460 11.854893 20.086306 38.260815 15.395876 14.593290 17.581572 17.793520 20.235165 20.673220 22.899370 30.956516 20.285402
+    ##  [92] 20.378004 24.841051 41.042843 35.958912 19.055059 36.326092 56.494282 27.697001 46.284252 33.237679 20.886541
 
 Again, my numbers are just slightly off from the tutorial:
 
@@ -632,7 +550,7 @@ and if one is easier or the numbers change as well.
 
 During this project I learned a lot about R and R Markdown. While
 working through the code for the machine learning algorithm, I learned
-the following in R: %in% operator, paste0(), mutate(), as_tibble(), and
+the following in R: %in% operator, paste0(), mutate(), as\_tibble(), and
 how to write a function in R. With regards to R Markdown, I learned how
 to create bullet points, insert an image, and also dealt with new errors
 I hadn’t seen before when attempting to knit my file. I was able to
@@ -707,13 +625,11 @@ install when you install Tensorflow. I will have to do more reserach on
 this and try to find a solution. Luckily, this was not an integral part
 of the model, just something to show how the layer() function works.
 
-``` r
-#layer <- layer_dense_features(
- # feature_columns = dense_features(spec), 
- # dtype = tf$float32
-#)
-#layer(train_df)
-```
+    #layer <- layer_dense_features(
+     # feature_columns = dense_features(spec), 
+     # dtype = tf$float32
+    #)
+    #layer(train_df)
 
 ![Error in R Markdown](Error_Layer_Dict.png) This project absolutely
 advanced my knowledge, I’m glad I was able to pick a topic and aim high
@@ -742,7 +658,7 @@ rewarding.
 
 <https://r4ds.had.co.nz/>
 
-<https://www.techtarget.com/searchenterpriseai/definition/machine-learning-ML#>:\~:text=Machine%20learning%20(ML)%20is%20a,to%20predict%20new
+<https://www.techtarget.com/searchenterpriseai/definition/machine-learning-ML#>:~:text=Machine%20learning%20(ML)%20is%20a,to%20predict%20new
 %20output%20values.
 
 <https://en.wikipedia.org/wiki/Machine_learning>

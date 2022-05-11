@@ -13,15 +13,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## What
 
-For my final project I am exploring Machine Learning libraries for R. One that I have used before with Python is TensorFlow. Another option that I found in my research is called caret. Below you will find a run-through of an example of regression machine learning model done using the Keras add-on for TensorFlow. Going through each step of the process, I have explained what it is doing and why it is important.
+For my final project I am exploring Machine Learning libraries for R. One that I have used before with Python is TensorFlow. Another option that I found in my research is called caret. Below you will find a run-through of an example of regression machine learning model done using the Keras add-on for TensorFlow. Going through each step of the process, I have explained what is happening and why it is important.
 
 ## Why
 
-It is my goal to become a Machine Learning Specialist as I continue down my Data Science career. As such, I feel it's best to be able to teach yourself a concept and be able demonstrate your understanding by showing others how to do the same. Starting at the baseline with an example provided in the documentation of a machine learning library will allow me to not be able to code the model, but also be able to process what it is doing. This will help me in the future when approaching various datasets to be able to identify which model/algorithm might be best to use for the inclined result
+It is my goal to become a Machine Learning Specialist as I continue down my Data Science career. As such, I feel it's best to be able to teach yourself a concept and be able demonstrate my understanding by showing others how to do the same. Starting at the baseline with an example provided in the documentation of a machine learning library will allow me to not only to be able to code the model, but also be able to process how it works. This will help me in the future when approaching various datasets to be able to identify which model/algorithm might be best to use for the inclined result.
 
 ## How
 
-While reading the documentation on TensorFlow and researching the caret library I found a few examples of others showing simple regression models. I felt it was best for me to follow what they did, run each code block, and then be able to explain the purpose behind that step. I chose stick to TensorFlow due to my familiarity. I also researched machine learning as broader topic as I feel it's phrase that brought up often, but few comprehend what it truly is. I paraphrased what I found so it is easy to digest and given an example of each type of machine learning so one can quickly identify where they might come into play. This should help set the foundation for some of the concepts seen in the regression example walk-through.
+While reading the documentation on TensorFlow and researching the caret library I found a few examples showing simple regression models. I felt it was best for me to follow what was shown, run each code block, and then explain the purpose behind that step. I chose stick to TensorFlow due to my familiarity. I also researched machine learning as broader topic as I feel it's a phrase that is brought up often, but few comprehend what it truly is. I paraphrased what I found to be easy to digest and given an example of each type of machine learning so one can quickly identify where they might come into play. This should help set the foundation for some of the concepts seen in the regression example walk-through.
 
 # Body
 

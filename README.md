@@ -111,9 +111,6 @@ Alright, Machine Learning, here we come!
 
     # This dataset is available in the keras/tfdatasets packages:
     boston_housing <- dataset_boston_housing()
-
-    ## Loaded Tensorflow version 2.8.0
-
     #boston_housing
     # Wanted to show the data, but it is too big and takes up too much space in the
     # pdf file
@@ -163,12 +160,16 @@ Alright, Machine Learning, here we come!
     ## [1]  7.2 18.8 19.0 27.0 22.2 24.5
 
 Looking at the dataset, we see it is already broken in to *train* and
-*test*, each with an x and y and the x dataframes have 13 columns. If
-you remember from the description of Supervised learning above, we train
-the algorithm on input data and the desired output, the *train* set will
-has both the input and the desired output. Then *test* data will be what
-we run the model on to see how it performs. So let’s move on and assign
-their variables:
+*test*, each with an x and y. he x dataframes have 13 columns, these
+columns will be described later on. The y data is the median-value of
+owned houses in the $1000’s. This what we will run the final prediction
+as the last step of this build.
+
+If you remember from the description of Supervised learning above, we
+train the algorithm on input data and the desired output, the *train*
+set will has both the input and the desired output. Then *test* data
+will be what we run the model on to see how it performs. So let’s move
+on and assign their variables:
 
     c(train_data, train_labels) %<-% boston_housing$train
     c(test_data, test_labels) %<-% boston_housing$test
@@ -181,14 +182,15 @@ their variables:
     ## [1] "Testing entries: 1326, labels: 102"
 
 We assigned the variables to their own vectors where the x are the
-entries (%\_data) and y are the labels (%\_labels). From there, using
-the concatenate function we are able to see how many examples we are
-training on (404) and how many we are testing on (102). When doing
-machine learning, you always want to have as much data as possible to
-train on, this allows for the model to be as accurate as possible, from
-there when running a supervised learning algorithm you also want provide
-a significant amount of data to test on, this will allow for enough
-points for the regression to be effective.
+entries (train\_data and test\_data) and y are the labels (train\_labels
+and test\_labels). From there, using the concatenate function we are
+able to see how many examples we are training on (404) and how many we
+are testing on (102). When doing machine learning, you always want to
+have as much data as possible to train on, this allows for the model to
+be as accurate as possible, from there when running a supervised
+learning algorithm you also want provide a significant amount of data to
+test on, this will allow for enough points for the regression to be
+effective.
 
 Now, let’s start to understand this data. For this part, I’m copying and
 pasting from the TensorFlow for R Tutorial page
@@ -206,8 +208,50 @@ property-tax rate per $10,000. \* Pupil-teacher ratio by town. \* 1000
 \* (Bk - 0.63) \*\* 2 where Bk is the proportion of Black people by
 town. \* Percentage lower status of the population.”
 
+I’ll start by first creating a table to match the description to the
+column names. I could just create a dataframe for this, however I wanted
+to explore the matrix() and as.table() functions. If I was doing this
+step in Python, I would create a dictionary as I feel it would be easier
+to read and look cleaner in the code chunk. In the future, I’d like to
+research if data dictionaries are possible with R and if so, how to
+build them and use them effectively.
+
+    table_column_names <- matrix(c('Per capita crime rate.','CRIM',
+    'The proportion of residential land zoned for lots over 25,000 square feet.','ZN',
+    'The proportion of non-retail business acres per town.','INDUS',
+    'Charles River dummy variable (= 1 if tract bounds river; 0 otherwise).','CHAS',
+    'Nitric oxides concentration (parts per 10 million).','NOX',
+    'The average number of rooms per dwelling.','RM',
+    'The proportion of owner-occupied units built before 1940.','AGE',
+    'Weighted distances to five Boston employment centers.','DIS',
+    'Index of accessibility to radial highways.','RAD',
+    'Full-value property-tax rate per $10,000.','TAX',
+    'Pupil-teacher ratio by town.','PTRATIO',
+    '1000 * (Bk - 0.63) ** 2 where Bk is the proportion of Black people by town.','B',
+    'Percentage lower status of the population.','LSTAT'), ncol = 2, byrow = TRUE)
+
+    colnames(table_column_names) <- c('Description', 'Column Name')
+    rownames(table_column_names) <- 1:13
+    table_column_names <- as.table(table_column_names)
+    table_column_names
+
+    ##    Description                                                                 Column Name
+    ## 1  Per capita crime rate.                                                      CRIM       
+    ## 2  The proportion of residential land zoned for lots over 25,000 square feet.  ZN         
+    ## 3  The proportion of non-retail business acres per town.                       INDUS      
+    ## 4  Charles River dummy variable (= 1 if tract bounds river; 0 otherwise).      CHAS       
+    ## 5  Nitric oxides concentration (parts per 10 million).                         NOX        
+    ## 6  The average number of rooms per dwelling.                                   RM         
+    ## 7  The proportion of owner-occupied units built before 1940.                   AGE        
+    ## 8  Weighted distances to five Boston employment centers.                       DIS        
+    ## 9  Index of accessibility to radial highways.                                  RAD        
+    ## 10 Full-value property-tax rate per $10,000.                                   TAX        
+    ## 11 Pupil-teacher ratio by town.                                                PTRATIO    
+    ## 12 1000 * (Bk - 0.63) ** 2 where Bk is the proportion of Black people by town. B          
+    ## 13 Percentage lower status of the population.                                  LSTAT
+
 Now that we know what the columns are, let’s add their names so
-examining the data makes a little more sense:
+examining the data makes a little more sense.
 
     column_names <- c('CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 
                       'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT')
@@ -224,17 +268,18 @@ examining the data makes a little more sense:
 
 Before we take a look at the top few rows of the dataframe, let’s go
 over what we did in the above code chunk. First, we created a new
-variable and name it %\_df, this variable is taking the %\_data part of
-the combined vector we constructed earlier and converting it to a
-dataframe using the as\_tibble() function. Within this function, we
-clarify to not check the names of the columns using .name\_repair =
-“minimal”. This is being done since the original data doesn’t have
-column names and we are assigning them now using the setNames()
-function, here we are pulling the array for the column names built in
-the first line of the code block. Finally, we are adding a 14th column
-to this dataframe with the column name ‘label’ which is populated with y
-of the train/test data or what we called %\_labels. So now we have two
-new dataframes, let’s peek at them:
+variable and name it train\_df and test\_df, this variable is taking the
+train\_data or test\_data part of the combined vector we constructed
+earlier and converting it to a dataframe using the as\_tibble()
+function. Within this function, we clarify to not check the names of the
+columns using .name\_repair = “minimal”. This is being done since the
+original data doesn’t have column names and we are assigning them now
+using the setNames() function, here we are pulling the array for the
+column names built in the first line of the code block. Finally, we are
+adding a 14th column to this dataframe with the column name ‘label’
+which is populated with y of the train/test data or what we called
+train\_labels and test\_labels. So now we have two new dataframes, let’s
+peek at them:
 
     head(train_df)
 
@@ -440,7 +485,7 @@ best to see it plotted out.
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-markdown_strict/unnamed-chunk-16-1.png) From
+![](README_files/figure-markdown_strict/unnamed-chunk-26-1.png) From
 these graphs we can see lines are flat after about 150/200 epochs, this
 indicates no improvement in the model training. This can be adjusted by
 using a different callback() function - callback\_early\_stopping(). In
@@ -466,7 +511,7 @@ re-train the model and plot the results:
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](README_files/figure-markdown_strict/unnamed-chunk-17-1.png)
+![](README_files/figure-markdown_strict/unnamed-chunk-27-1.png)
 According to these graphs the average error is ~$2,500. Can we get a
 number to confirm?
 
@@ -474,7 +519,7 @@ number to confirm?
 
     paste0("Mean absolute error on train set: $", sprintf("%.2f", mae * 1000))
 
-    ## [1] "Mean absolute error on train set: $2113.73"
+    ## [1] "Mean absolute error on train set: $2111.06"
 
 Let’s compare this to what the model evaluates on the test dataset:
 
@@ -482,7 +527,7 @@ Let’s compare this to what the model evaluates on the test dataset:
 
     paste0("Mean absolute error on test set: $", sprintf("%.2f", mae * 1000))
 
-    ## [1] "Mean absolute error on test set: $3175.81"
+    ## [1] "Mean absolute error on test set: $3095.32"
 
 Looking at the number I got for MAE is 3551.23, however on the
 TensorFlow tutorial page they show 3002.32:
@@ -511,7 +556,7 @@ doing that and then re-running the above code block to see what happens:
 
     paste0("Mean absolute error on test set: $", sprintf("%.2f", mae * 1000))
 
-    ## [1] "Mean absolute error on test set: $3175.81"
+    ## [1] "Mean absolute error on test set: $3095.32"
 
 I am still getting the same result. This could be that data in the
 dataset has changed since they posted their tutorial. Or maybe I missed
@@ -521,19 +566,23 @@ some of the errors under the label column going up to $15,000, they are
 not as significant.
 
 Since the purpose of most machine learning is predictive modeling, let’s
-generate some predictions based on the model we have now trained:
+generate some predictions based on the model we have now trained. We are
+predicting on the *label* column of the test\_df. This is providing us
+with new median-values of owned homes in the $1000’s, however now with
+lowest errors. This is taking in all the columns from the train\_df that
+the algorithm learned from and minimizing the MAE.
 
     test_predictions <- model %>% predict(test_df %>% select(-label))
     test_predictions[ , 1]
 
-    ##   [1]  8.291296 18.580660 21.940470 32.446110 25.609238 19.524576 28.019157 22.242640 18.947983 22.041273 17.722483 17.134146 16.077282
-    ##  [14] 42.489101 18.699308 19.563688 27.899134 21.152613 19.214466 38.456463 11.360524 15.391788 20.914240 15.456657 20.773479 24.676567
-    ##  [27] 32.060402 28.071505 10.636412 22.488497 19.275652 14.715639 34.514153 26.490610 18.526983  9.222099 15.332552 17.821321 22.271517
-    ##  [40] 26.471128 28.572823 28.385550 14.935079 40.689476 30.714273 25.149134 26.510857 17.006639 24.817846 22.738436 34.070557 20.166559
-    ##  [53] 12.456122 16.388071 35.891769 28.206112 12.725334 47.827763 35.261124 23.449163 25.546373 17.705328 13.907625 18.004059 23.785948
-    ##  [66] 21.881830 13.924601 22.913406 13.432224  7.286370 38.300983 29.442411 24.118299 13.935566 25.508701 17.803782 21.168638 24.104616
-    ##  [79] 35.385460 11.854893 20.086306 38.260815 15.395876 14.593290 17.581572 17.793520 20.235165 20.673220 22.899370 30.956516 20.285402
-    ##  [92] 20.378004 24.841051 41.042843 35.958912 19.055059 36.326092 56.494282 27.697001 46.284252 33.237679 20.886541
+    ##   [1]  7.923131 18.042135 21.465740 31.177990 25.269594 19.487610 26.503796 21.412567 18.198948 21.430527 18.446383 17.578253 14.936357
+    ##  [14] 42.465782 18.331978 19.831448 26.797022 21.744701 19.000748 35.528568 10.493870 12.855206 20.617655 14.414326 22.028765 24.383533
+    ##  [27] 29.920998 30.002344  9.854830 21.170998 18.932587 13.132218 33.439278 25.245056 16.451715  7.495292 14.776142 17.491758 21.400600
+    ##  [40] 27.379234 29.781086 28.211895 14.015942 39.924252 30.491653 25.059906 26.899975 16.057014 23.445415 22.473648 36.314247 19.051212
+    ##  [53] 11.387060 16.420965 34.077503 28.471773 12.034876 47.754810 34.336044 24.549263 23.186682 16.640522 13.110272 17.745674 23.341009
+    ##  [66] 22.814341 12.438395 22.897514 13.978880  6.363329 35.663113 29.370857 24.722786 15.761385 25.971981 17.883728 20.006939 23.869781
+    ##  [79] 36.708584 10.065416 19.954538 38.185932 16.297333 13.509519 17.152889 18.207611 19.747690 21.144623 21.930370 30.758539 20.028851
+    ##  [92] 20.884312 26.312145 40.975758 36.875751 18.543653 36.376293 52.261646 26.322823 45.306599 31.874325 20.080006
 
 Again, my numbers are just slightly off from the tutorial:
 
@@ -670,3 +719,9 @@ rewarding.
 <https://www.marsja.se/how-to-use-in-in-r/>
 
 <https://rmarkdown.rstudio.com/lesson-1.html>
+
+<https://www.statology.org/create-table-in-r/>
+
+<https://statisticsglobe.com/change-row-names-of-data-frame-or-matrix-in-r>
+
+<https://imjbmkz.medium.com/analyzing-boston-housing-dataset-2c7928f2a87f>
